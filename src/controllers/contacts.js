@@ -40,7 +40,7 @@ export const createContactController = async (req, res) => {
 export const patchContactController = async (req, res) => {
   const { body } = req;
   const { contactId } = req.params;
-  const { contact } = await upsertContact(contactId, body);
+  const contact = await upsertContact(contactId, body);
 
   res.status(200).json({
     status: 200,
