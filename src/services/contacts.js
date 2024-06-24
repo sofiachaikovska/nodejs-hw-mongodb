@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
 import { Contact } from '../db/models/contact.js';
+import { saveToCloudinary } from '../utils/saveToCloudinary.js';
 
 const createPaginationInformation = (page, perPage, count) => {
   const totalPages = Math.ceil(count / perPage);
@@ -71,16 +72,28 @@ export const getContactById = async (id, userId) => {
   return contact;
 };
 
-export const createContact = async (payload, userId) => {
-  const contact = await Contact.create({ ...payload, userId });
+export const createContact = async ({ photo, ...payload }, userId) => {
+  let url;
+
+  if (photo) {
+    url = await saveToCloudinary(photo);
+  }
+
+  const contact = await Contact.create({ ...payload, userId, photo: url });
 
   return contact;
 };
 
-export const upsertContact = async (id, payload, userId) => {
+export const upsertContact = async (id, { photo, ...payload }, userId) => {
+  let url;
+
+  if (photo) {
+    url = await saveToCloudinary(photo);
+  }
+
   const contact = await Contact.findByIdAndUpdate(
     { _id: id, userId },
-    payload,
+    { ...payload, ...(url && { photo: url }) },
     {
       new: true,
     },
