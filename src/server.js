@@ -1,6 +1,7 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 import { env } from './utils/env.js';
 import { ENV_VARS, UPLOAD_DIR } from './constants/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -26,6 +27,8 @@ export const setupServer = () => {
   app.use(express.json());
 
   app.use('/uploads', express.static(UPLOAD_DIR));
+
+  app.use('/api-docs', swaggerDocs());
 
   app.use(rootRouter);
 
